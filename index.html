@@ -857,29 +857,36 @@ if ('serviceWorker' in navigator) {
 }
 
   </script>
-    <!-- Botón para instalar la app, oculto por defecto -->
-<button id="btn-install" style="display:none;">Instalar app</button>
-
     
-    <script>
+  <button id="btn-install" style="display:none;">Instalar app</button>
+
+<script>
   let deferredPrompt;
 
   window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Previene el popup automático
     deferredPrompt = e;
 
     const btnInstall = document.getElementById('btn-install');
     btnInstall.style.display = 'block';
 
-    btnInstall.addEventListener('click', () => {
-      btnInstall.style.display = 'none';
+    btnInstall.addEventListener('click', async () => {
+      btnInstall.disabled = true;
       deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-        deferredPrompt = null;
-      });
+
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`Usuario eligió: ${outcome}`);
+      deferredPrompt = null;
     });
   });
-    </script>
+
+  // Opcional: ocultar botón si ya está instalada
+  window.addEventListener('appinstalled', () => {
+    console.log('App instalada');
+    document.getElementById('btn-install').style.display = 'none';
+  });
+</script>
+
   </body>
 </html>
 
