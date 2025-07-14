@@ -856,11 +856,12 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-</script>
+  </script>
     <!-- Botón para instalar la app, oculto por defecto -->
 <button id="btn-install" style="display:none;">Instalar app</button>
 
-<script>
+    
+    <script>
   let deferredPrompt;
 
   window.addEventListener('beforeinstallprompt', (e) => {
@@ -878,9 +879,7 @@ if ('serviceWorker' in navigator) {
       });
     });
   });
-
-
-  </script>
+    </script>
   </body>
 </html>
 
