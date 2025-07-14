@@ -1,6 +1,6 @@
 {
-  "name": "Calculadora IMC",
-  "short_name": "IMC",
+  "name": "App-Cami",
+  "short_name": "App-Cami",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#ffffff",
