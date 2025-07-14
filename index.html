@@ -1,0 +1,866 @@
+<!DOCTYPE html> <!-- Declaración del tipo de documento HTML5 -->
+<html> <!-- Etiqueta raíz del documento HTML -->
+  <head>  <!-- Sección de metadatos y recursos del documento -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#007bff">
+
+  <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mi App</title>
+    <link rel="stylesheet" href="style.css" />
+    <base target="_top"> <!-- Establece que todos los links se abran en la ventana superior (importante para Apps Script) -->
+
+    <style> /*Inicio de la seccion CSS  🅱🅰🆎*/
+
+/*BOTON MODO OBSCURO 🎨🎨🎨*/
+
+      body {
+  background-color: #ffffff;
+  color: #222;
+  transition: background-color 0.4s, color 0.4s;
+}
+
+/* Modo oscuro general */
+body.dark-mode {
+  background-color: #121212;
+  color: #f1f1f1;
+}
+
+/* Cajas internas */
+.formulario,
+.resultado-box {
+  transition: background-color 0.4s, color 0.4s;
+}
+
+/* En modo claro */
+body:not(.dark-mode) .formulario,
+body:not(.dark-mode) .resultado-box {
+  background-color: #f9f9f9;
+  color: #222;
+}
+
+/*INPUTS  DEL MODO OBSCURO MAS SUAVES*/
+
+input, select {
+  background-color: #fff;
+  color: #222;
+  border: 1px solid #ccc;
+  transition: background-color 0.4s, color 0.4s, border-color 0.4s;
+}
+
+/* En modo oscuro */
+body.dark-mode input,
+body.dark-mode select {
+  background-color: #1f1f1f;
+  color: #eee;
+  border: 1px solid #555;
+}
+
+/* En modo oscuro */
+body.dark-mode .formulario,
+body.dark-mode .resultado-box {
+  background-color: #1e1e1e;
+  color: #eee;
+}
+
+/* Botón modo oscuro */
+.boton-darkmode {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  padding: 8px 14px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+/*PESTAÑA AMPUTACIONES EN MODO OBSCURO CUANDO SE PINTA DE CELESTE CADA PORCION DEL CUERPO */
+
+.checkbox-container label:hover {
+  background-color: #e0f7fa;
+  color: #000;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+/* En modo oscuro */
+body.dark-mode .checkbox-container label:hover {
+  background-color: #2c3e50;  /* azul oscuro */
+  color: #fff;
+}
+
+
+
+/*GENERALIDADES DE LA PAGINA*/
+
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0 auto;
+        padding: 20px;
+        max-width: 1200px;  /* Ahora tu app puede ocupar hasta 1200px en pantallas grandes */
+    }
+  /* Fuente principal del documento - Ancho maximo - centra el contenido horizontalmente */
+      label { font-weight: bold; display: block; margin-top: 10px; } /* BOLD:Texto en negrita, y cada label ocupa una linea- espacio superior */
+      input, select { width: 100%; padding: 8px; } /* Ocupa todo el ancho disponible - Espacio Interno */
+      .resultado { margin-top: 20px; background: #eef; padding: 10px; border-radius: 8px; } /* Color de fondo azul claro - espacio initerno- bordes redondeados */
+      .loader {  /* Estilo para el elemento de carga (spinner) */
+          border: 4px solid #f3f3f3; /* Borde gris claro */
+          border-top: 4px solid #4285f4;
+          border-radius: 50%;
+          width: 30px;
+          height: 30px;
+          animation: spin 1s linear infinite;
+          margin: 20px auto;
+          display: none; /* Oculto por defecto */
+        }
+        @keyframes spin {  /* Define la animación de rotación */
+          0% { transform: rotate(0deg); } /* Inicio: 0 grados */
+          100% { transform: rotate(360deg); } /* Fin: 360 grados (rotación completa) */
+        }
+    /* ESTILOS PESTAÑAS */
+      .tab {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px 0;
+        background: none;      /* Elimina fondo */
+        border: none;          /* Elimina bordes */
+        box-shadow: none;      /* Por si hay sombra oculta */
+}
+
+      .tab button {
+          background-color: #f0f0f0;
+          color: #333;
+          border: 1px solid #ccc;
+          border-radius: 10px;
+          padding: 10px 18px;
+          font-size: 15px;
+          font-weight: bold;
+          cursor: pointer;
+          box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1); /* sombra individual */
+          transition: all 0.3s ease;
+        }
+    /*ESTADOS ESPECIALES DE LOS BOTONES DE LAS PESTAÑAS 🎮🎮*/
+      .tab button:hover {/*color al pasar el cursor*/
+         background-color: #34495e;       /* Un poco más claro al pasar el mouse */
+         color: white;
+         transform: scale(1.03);
+      }
+      .tab button.active {
+        background-color: #4285f4;       /* Azul Google para el activo */
+        color: white;
+        border: none;
+        box-shadow: 2px 2px 6px rgba(66, 133, 244, 0.4); /* sombra azul clara */
+
+      }
+      .tabcontent {
+        display: none;
+      }
+      .tabcontent.default {
+        display: block;
+      }
+      /*BOTONES CALCULAR*/
+
+      .boton-calculo {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: background-color 0.3s, transform 0.2s;
+      }
+
+.boton-calculo:hover {
+  background-color: #388e3c;
+  transform: scale(1.03);
+}
+/* ESTILO VISUAL DE CHECKBOX ✅✅✅*/
+
+.checkbox-container {
+  display: flex;
+  flex-direction: column; /* ordena las filas en columnas */
+  gap: 8px; /* Espacio vertical entre cada fila */
+  margin-bottom: 15px;
+}
+
+.checkbox-container label {
+  display: flex;
+  align-items: center; /* ✅ Alinea verticalmente el checkbox y el texto */
+  gap: 8px;             /* ✅ Espacio entre el checkbox y el texto */
+  margin-bottom: 8px;   /* ✅ Espaciado uniforme entre cada fila */
+  cursor: pointer;
+  position: relative;
+}
+
+
+.checkbox-container label:hover {
+  background-color: #e0f7fa; /* Color suave al pasar el mouse */
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #4285f4; /* Color azul Google cuando está tildado */
+}
+
+.checkbox-container label {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 10px;
+  cursor: pointer;
+  
+}
+.checkbox-container label:hover::after { /*::after agrefa un artel flotante cuando pasas el mouse*/
+  content: attr(data-tooltip); /*ATRIBUTO data-tooltip: en cada checkbox con el texto a mostrar*/
+  position:absolute;
+  left: 25px;
+  top: -5px;
+  background-color: #333;
+  color: #fff;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 10;
+}
+/*TEXTO DEL TOOLTIP automático usando data-tooltip */
+.checkbox-container label { /*aplica los estilos a cada label (texto al lado de cada checkbox) que esta dentro del contenedor con clase checbok-container*/
+  position: relative; /*DICE: este label va a servir de referencia para colocar cosas encima*/
+  cursor: pointer; /*cursor se transforma en manito*/
+}
+
+/* Tooltip general */
+label[data-tooltip] {
+  position: relative;
+  cursor: pointer;
+}
+
+label[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%; /* Se muestra arriba del label */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #222;
+  color: #f1f1f1;
+  padding: 6px 10px;
+  font-size: 0.8em;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  z-index: 10;
+  pointer-events: none;
+}
+
+label[data-tooltip]:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Si estás en modo claro, que sea gris claro */
+body:not(.dark-mode) label[data-tooltip]::after {
+  background-color: #eee;
+  color: #000;
+}
+
+
+/* CONTENEDOR GENERAL FLEXIBLE */
+.contenedor-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+/* CADA COLUMNA: formulario y resultado */
+.formulario, .resultado-box {
+  flex: 1 1 320px;              /* Mínimo 320px, se adaptan al espacio */
+  padding: 20px;
+  background: #f9f9f9;          /* 🎨 Fondo claro */
+  color: #222;                  /* 🖋 Texto gris oscuro */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra más suave */
+  box-sizing: border-box;
+}
+
+/* Estilo responsivo para celulares */
+@media (max-width: 600px) {
+  .contenedor-flex {
+    flex-direction: column;
+  }
+}
+
+
+    </style>
+  </head>
+  <body>
+     <div class="tab">
+      <button class="tablinks active" onclick="openTab(event, 'Calculadora')">Requerimientos</button>
+      <button class="tablinks" onclick="openTab(event, 'Info')">Estimacion Peso - Talla</button>
+      <button class="tablinks" onclick="openTab(event, 'Amputacion')">Peso Ajustado (Amputación)</button>
+      <button class="tablinks" onclick="openTab(event, 'PI')">PI y PIC</button>
+
+    </div>
+<!--BONTON MODO OBSCURO  🎨🎨🎨-->
+
+<button onclick="toggleDarkMode()" class="boton-darkmode">🌓 Modo Oscuro</button>
+
+<!--  PESTAÑA 1 REQUERIMEINTOS 📍📍📍 -->
+ 
+  <div id="Calculadora" class="tabcontent default" style="display: block;">
+  <div class="contenedor-flex">
+    
+    <!-- FORMULARIO A LA IZQUIERDA -->
+    <div class="formulario">
+      <h2>Cálculo de Requerimientos</h2>
+
+      <label>Sexo:</label>
+      <select id="sexo">
+        <option value="Femenino">Femenino</option>
+        <option value="Masculino">Masculino</option>
+      </select>
+
+      <label>Edad (años):</label>
+      <input type="number" id="edad">
+
+      <label>Peso (kg):</label>
+      <input type="number" id="peso">
+
+      <label>Talla (cm):</label>
+      <input type="number" id="talla">
+
+      <label>Factor Patología:</label>
+      <input type="number" step="0.01" id="factorPatologia" value="1.0">
+
+      <label>Factor Actividad:</label>
+      <input type="number" step="0.01" id="factorActividad" value="1.0">
+
+      <button class="boton-calculo" onclick="calcular()">Calcular</button>
+    </div>
+
+     <!-- Columna derecha: Resultado -->
+      <div class="resultado-box" id="resultado" style="display:none;">
+    <h3>Resultado</h3>
+    <!-- el contenido aparecerá aquí -->
+</div>
+
+  </div>
+  </div>
+
+<!-- PESTAÑA 2 - ESTIMACIONES 📌📌📌 -->
+  <div id="Info" class="tabcontent">
+    <div class="contenedor-flex">
+      
+    <!-- FORMULARIO: Estimación de Talla -->
+    <div class="formulario">
+      <h2>Estimación de Talla</h2>
+      
+      <label for="ar-talla">Altura de rodilla (cm):</label>
+      <input type="number" id="ar-talla">
+
+      <label for="edad-talla">Edad:</label>
+      <input type="number" id="edad-talla">
+
+      <label for="sexo-talla">Sexo:</label>
+      <select id="sexo-talla">
+        <option value="masculino">Masculino</option>
+        <option value="femenino">Femenino</option>
+      </select>
+
+      <button onclick="calcularTalla()" class="boton-calculo">Calcular Talla</button>
+    </div>
+
+    <!-- RESULTADO -->
+    <div class="resultado-box" id="resultado-talla" style="display: none;">
+      <h3>Resultado</h3>
+      <p><strong>Talla estimada:</strong> <span id="valor-talla">0</span> cm</p>
+      <p style="font-size: 0.9em; color: #666;">Margen de error: ±7-9 cm</p>
+    </div>
+
+    </div>
+    
+    <!-- FORMULARIO: Estimación de Peso -->
+ 
+    <div class="contenedor-flex">
+
+      <!-- Lado Izquierdo -->
+
+      <div class="formulario">
+        <h2>Estimación de Peso</h2>
+
+        <label for="ar-peso">Altura de rodilla (cm):</label>
+        <input type="number" id="ar-peso">
+
+        <label for="cmb">Circunferencia brazo (cm):</label>
+        <input type="number" id="cmb">
+
+        <label for="edad-peso">Edad:</label>
+        <input type="number" id="edad-peso">
+
+        <label for="sexo-peso">Sexo:</label>
+        <select id="sexo-peso">
+          <option value="masculino">Masculino</option>
+          <option value="femenino">Femenino</option>
+        </select>
+
+      <button onclick="calcularPeso()" class="boton-calculo">Calcular Peso</button>
+      </div>
+
+<!-- LADO DERECHO ➡➡➡👉👉-->
+
+    <div class="resultado-box" id="resultado-peso" style="display: none;">
+        <h3>Resultado</h3>
+        <p><strong>Peso estimado:</strong> <span id="valor-peso">0</span> kg</p>
+        <p style="font-size: 0.9em; color: #666;">Margen de error: ±3-5 kg</p>
+    </div>  
+  </div>
+    </div>
+<!--- PESO AJUSTADO PARA AMPUTACIONES 📌📌📌--->
+
+  <div id="Amputacion" class="tabcontent" style="display: none;">
+    <div class="contenedor-flex">
+
+      <!---FORMULARIO-->
+
+      <div class="formulario">
+        <h2>Peso Ajustado por Amputación</h2>
+
+        <label for="peso-amputado">Peso medido (kg):</label>
+        <input type="number" id="peso-amputado">
+
+    <label>Segmentos amputados:</label>
+    <div class="checkbox-container">
+      <label data-tooltip="0.8% del peso corporal"><input type="checkbox" value="0.8"> Mano</label>
+      <label data-tooltip="2.3% del peso corporal"><input type="checkbox" value="2.3"> Antebrazo (sin mano)</label>
+      <label data-tooltip="6.5% del peso corporal"><input type="checkbox" value="6.5"> Brazo completo</label>
+      <label data-tooltip="1.8% del peso corporal"><input type="checkbox" value="1.8"> Pie</label>
+      <label data-tooltip="5.3% del peso corporal"><input type="checkbox" value="5.3"> Parte inferior pierna (sin pie)</label>
+      <label data-tooltip="11.6% del peso corporal"><input type="checkbox" value="11.6"> Muslo</label>
+      <label data-tooltip="18.7% del peso corporal"><input type="checkbox" value="18.7"> Miembro inferior completo</label>
+    </div>
+
+    <button onclick="calcularAmputacion()" class="boton-calculo">Calcular Peso Ajustado</button>
+      </div>
+
+<!---RESULTADO A LA DERECHA-->
+
+  <div class="resultado-box" id="resultado-amputacion" style="display: none;">
+      <h3>Resultado</h3>
+      <p><strong>Peso ajustado:</strong> <span id="valor-ajustado">0</span> kg</p>
+      <button onclick="copiarResultadoAmputacion()" class="boton-secundario" style="margin-top: 10px;">📋 Copiar Resultado</button>
+  </div>
+    </div>
+  </div>
+
+
+<!-- PESTAÑA PESO IDEAL Y PESO IDEAL CORREGIDO 📌📌📌-->
+
+  <div id="PI" class="tabcontent" style="display: none;">
+    <div class="contenedor-flex">
+
+      <!---FOMRULARIO-->
+      <div class="formulario">
+        <h2 style="color: #4285f4;">Peso Ideal y PIC</h2>
+
+        <label for="sexo-pi">Sexo:</label>
+        <select id="sexo-pi" style="width: 100%; padding: 8px; margin-bottom: 15px;">
+          <option value="Femenino">Femenino</option>
+          <option value="Masculino">Masculino</option>
+        </select>
+
+        <label for="edad-pi">Edad (años):</label>
+        <input type="number" id="edad-pi">
+
+        <label for="talla-pi">Talla (cm):</label>
+        <input type="number" id="talla-pi">
+
+        <label for="peso-actual">Peso actual (kg):</label>
+        <input type="number" id="peso-actual">
+
+        <label for="factor-patologia-pi">Factor Patología:</label>
+        <input type="number" id="factor-patologia-pi" step="0.01" value="1.0">
+
+       <button onclick="calcularPIC()" class="boton-calculo">Calcular PI / PIC / GCT</button>
+      </div>
+    
+  <!--RESULTADOS-->
+
+      <div class="resultado-box" id="resultado-pi" style="display: none;">
+        <h3>Resultados</h3>
+        <p><strong>Peso Ideal (segun formula de Hamwi):</strong> <span id="valor-pi">0</span> kg</p>
+        <p><strong>Peso Ideal Corregido (PIC):</strong> <span id="valor-pic">0</span> kg</p>
+        <p><strong>TMB (Harris Benedict calculado con PIC):</strong> <span id="valor-tmb-pic">0</span> kcal/día</p>
+        <p><strong>Gasto Calórico Total (GCT):</strong> <span id="valor-gct-pic">0</span> kcal/día</p>
+        <!--CONTENEDOR PARA LA FORMULA-->
+        <div id="formula-pic" style="margin-top:10px; font-size:0.9em; color:#666; border-top:1px solid #eee; padding-top:8px;"></div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- FUNCIONES JAVASCRIPT 🔦🏹🏹🏹📎 -->
+  <script>
+    function calcularTalla() {
+      // Obtener valores comunes
+      const ar = parseFloat(document.getElementById('ar-talla').value);
+      const edad = parseInt(document.getElementById('edad-talla').value);
+      const sexo = document.getElementById('sexo-talla').value;
+      
+      // Validación
+      if (!ar || !edad) {
+        alert('Complete todos los campos');
+        return;
+      }
+
+      // Cálculo según fórmula de Chumlea
+      let talla;
+      if (sexo === 'masculino') {
+        if (edad >= 19 && edad <= 59) talla = (ar * 1.88) + 71.85;
+        else if (edad >= 60 && edad <= 80) talla = (ar * 2.08) + 59.01;
+      } else {
+        if (edad >= 19 && edad <= 59) talla = (ar * 1.86) - (edad * 0.05) + 70.25;
+        else if (edad >= 60 && edad <= 80) talla = (ar * 1.91) - (edad * 0.17) + 75.00;
+      }
+
+      // Mostrar resultado
+      if (talla) {
+        document.getElementById('valor-talla').textContent = talla.toFixed(2);
+        document.getElementById('resultado-talla').style.display = 'block';
+      } else {
+        alert('Edad fuera de rango (19-80 años)');
+      }
+    }
+
+    function calcularPeso() {
+      // Obtener valores
+      const ar = parseFloat(document.getElementById('ar-peso').value);
+      const cmb = parseFloat(document.getElementById('cmb').value);
+      const edad = parseInt(document.getElementById('edad-peso').value);
+      const sexo = document.getElementById('sexo-peso').value;
+      
+      // Validación
+      if (!ar || !cmb || !edad) {
+        alert('Complete todos los campos');
+        return;
+      }
+
+      // Cálculo según fórmula de Brunnstrom
+      let peso;
+      if (sexo === 'masculino') {
+        if (edad >= 19 && edad <= 59) peso = (ar * 1.19) + (cmb * 3.21) - 86.82;
+        else if (edad >= 60 && edad <= 80) peso = (ar * 1.10) + (cmb * 3.07) - 75.81;
+      } else {
+        if (edad >= 19 && edad <= 59) peso = (ar * 1.01) + (cmb * 2.81) - 66.04;
+        else if (edad >= 60 && edad <= 80) peso = (ar * 1.09) + (cmb * 2.68) - 65.51;
+      }
+
+      // Mostrar resultado
+      if (peso) {
+        document.getElementById('valor-peso').textContent = peso.toFixed(2);
+        document.getElementById('resultado-peso').style.display = 'block';
+      } else {
+        alert('Edad fuera de rango (19-80 años)');
+      }
+    }
+//FUNCION AMPUTACIONES 📌📌📌
+
+//BOTON MODO OSCURO 🎨🎨
+function toggleDarkMode() {
+  document.body.classList.toggle("dark-mode");
+}
+
+    function calcularAmputacion() {
+  const peso = parseFloat(document.getElementById("peso-amputado").value);
+  if (isNaN(peso) || peso <= 0) {
+    alert("Ingrese un peso válido.");
+    return;
+  }
+
+// Sumar % de todos los segmentos seleccionados
+  const checkboxes = document.querySelectorAll("#Amputacion input[type='checkbox']:checked");
+  let porcentajeTotal = 0;
+  checkboxes.forEach(cb => {
+    porcentajeTotal += parseFloat(cb.value);
+  });
+
+  if (porcentajeTotal === 0) {
+    alert("Seleccione al menos un segmento amputado.");
+    return;
+  }
+
+// Aplicar fórmula
+const pesoAjustado = peso * (100 / (100 - porcentajeTotal));
+
+// MOSTRAR LA FORMULA CON LOS REEMPLAZOS DE LOS DATOS INGRESADOS
+
+const formula = `Fórmula: (${peso} × 100) / (100 - ${porcentajeTotal.toFixed(1)}) = ${pesoAjustado.toFixed(2)} kg`;
+
+
+document.getElementById("resultado-amputacion").innerHTML = `
+  <h3 style="margin-top: 0; color: #2e7d32;">Resultado</h3>
+  <p><strong>Peso ajustado:</strong> <span id="valor-ajustado">${pesoAjustado.toFixed(2)}</span> kg</p>
+  <p style="font-size: 0.9em; color: #666;">${formula}</p>
+`;
+
+// Mostrar resultado
+  document.getElementById("valor-ajustado").textContent = pesoAjustado.toFixed(2);
+  document.getElementById("resultado-amputacion").style.display = "block";
+  
+}
+
+//BOTON COPIAR AL PORTAPAPELES 
+function copiarResultadoAmputacion() {
+  const contenido = document.getElementById("resultado-amputacion").innerText;
+  navigator.clipboard.writeText(contenido)
+}
+
+// FUNCION PI Y PIC 📌📌📌📌
+
+
+function calcularPIC() { // CREAS LA Fx
+  const sexo = document.getElementById("sexo-pi").value; //Obtenes datos de formulario
+  const edad = parseFloat(document.getElementById("edad-pi").value); //Toma el valor numérico ingresado en el input de edad (edad-pi) y lo convierte a número decimal (float). y lo guaarda en la variable edad.
+  const talla = parseFloat(document.getElementById("talla-pi").value);
+  const pesoActual = parseFloat(document.getElementById("peso-actual").value);
+  const factorPatologia = parseFloat(document.getElementById("factor-patologia-pi").value);
+  const factorActividad = parseFloat(document.getElementById("factor-actividad-pi")?.value) ||1;  //Toma el factor de actividad física. Si por alguna razón el campo no existe o está vacío, usa 1 como valor por defecto (sin correcció  ?. operador de encadenamiento opcional, que evita errores si el elemento no existe.
+
+//VALIDACION DE DATOS: SI FALTA ALGUNO
+  if (isNaN(talla) || isNaN(pesoActual) || isNaN(edad)) {
+    alert("Complete todos los campos correctamente.");
+    return;
+  }
+
+  // Calcular Peso Ideal (PI)
+  let pi;
+  if (sexo === "Femenino") {
+    pi = 45.5 + 2.27 * ((talla - 150) / 2.5);
+  } else {
+    pi = 47.7 + 2.72 * ((talla - 150) / 2.5);
+  }
+
+  // Calcular Peso Ideal Corregido (PIC)
+  const pic = (pesoActual - pi) * 0.25 + pi;
+
+  // Calcular TMB usando PIC
+  let tmb;
+  if (sexo === "Femenino") {
+    tmb = 655.1 + (9.56 * pic) + (1.85 * talla) - (4.68 * edad);
+  } else {
+    tmb = 66.47 + (13.75 * pic) + (5 * talla) - (6.76 * edad);
+  }
+
+//CALCULAR GCT
+
+  const gct = tmb * factorActividad * factorPatologia;
+
+  // Mostrar resultados
+  document.getElementById("valor-pi").textContent = pi.toFixed(2);
+  document.getElementById("valor-pic").textContent = pic.toFixed(2);
+  document.getElementById("valor-tmb-pic").textContent = tmb.toFixed(0);
+  document.getElementById("valor-gct-pic").textContent = gct.toFixed(0);
+//Toma los valores calculados y los inserta en los spans del HTML, usando .toFixed() para limitar los decimales: PI y PIC → 2 decimales y TMB y GCT → enteros
+
+
+  // Mostrar fórmula
+  const formulaText = sexo === "Femenino"
+    ? "TMB mujer = 655.1 + (9.56 × peso) + (1.85 × talla) − (4.68 × edad)"
+    : "TMB varón = 66.47 + (13.75 × peso) + (5 × talla) − (6.76 × edad)";
+
+  document.getElementById("formula-pic").innerHTML = formulaText;
+
+  // Mostrar caja de resultados
+  document.getElementById("resultado-pi").style.display = "block";
+} //Este bloque estaba oculto (display: none). Con esta línea se muestra para que el usuario vea los resultados.
+
+  </script>
+
+  <script>
+
+// FUNCIÓN PARA CAMBIAR PESTAÑAS
+      function openTab(evt, tabName) {
+        // Oculta todos los contenidos
+        var tabcontent = document.getElementsByClassName("tabcontent");
+        for (var i = 0; i < tabcontent.length; i++) {
+          tabcontent[i].style.display = "none";
+        }
+        
+        // Desactiva todos los botones
+        var tablinks = document.getElementsByClassName("tablinks");
+        for (var i = 0; i < tablinks.length; i++) {
+          tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        
+        // Muestra la pestaña actual
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+      }
+//  CALCULOS DE REQUERIMIENTOS 📌📌📌
+      function calcular() {
+  console.log("Función ejecutándose"); // Verifica en la consola (F12)
+
+
+  const datos = {
+             sexo: document.getElementById("sexo").value,
+          edad: document.getElementById("edad").value,
+          peso: document.getElementById("peso").value,
+          talla: document.getElementById("talla").value,
+          factorPatologia: document.getElementById("factorPatologia").value,
+          factorActividad: document.getElementById("factorActividad").value
+        };
+
+
+  google.script.run.withSuccessHandler(function(res) {
+          const div = document.getElementById("resultado");
+          div.style.display = "block";   
+  // ➕ Texto explicativo 
+    const formulaText = datos.sexo === "Femenino" 
+      ? "Fórmula HB (Mujer): 655.1 + (9.56 × peso) + (1.85 × talla) - (4.68 × edad)"
+      : "Fórmula HB (Hombre): 66.47 + (13.75 × peso) + (5 × talla) - (6.76 × edad)";
+    
+    div.innerHTML = `
+      <strong>TMB:</strong> ${res.tmb} kcal/día<br>
+      <strong>GCT:</strong> ${res.gct} kcal/día<br>
+      <div style="margin-top:10px; font-size:0.9em; color:#666; border-top:1px solid #eee; padding-top:8px;">
+        ${formulaText}
+      </div>
+    `;
+  }).calcularTMB(datos);
+}
+  </script>
+
+  <script>
+
+
+  // FUNCION CALCULAR PARA REQUERIMIENTOS 
+function calcular() {
+  const sexo = document.getElementById("sexo").value;
+  const edad = parseFloat(document.getElementById("edad").value);
+  const peso = parseFloat(document.getElementById("peso").value);
+  const talla = parseFloat(document.getElementById("talla").value);
+  const factorPatologia = parseFloat(document.getElementById("factorPatologia").value);
+  const factorActividad = parseFloat(document.getElementById("factorActividad").value);
+
+  // 📌 Calculamos el IMC usando la fórmula: peso en kg / (talla en metros)²
+  const imc = peso / Math.pow(talla / 100, 2);
+
+ // 📌 Definimos una variable para guardar la categoría nutricional
+  let clasificacionIMC = "";
+
+// 📌 Clasificamos el IMC según OMS adaptado de Canicoba y Mauricio (2017)
+  if (imc < 16) {
+    clasificacionIMC = "Desnutrición Severa";
+  } else if (imc >= 16 && imc < 17) {
+    clasificacionIMC = "Desnutrición Moderada";
+  } else if (imc >= 17 && imc < 18.5) {
+    clasificacionIMC = "Desnutrición Leve";
+  } else if (imc >= 18.5 && imc < 25) {
+    clasificacionIMC = "Normopeso";
+  } else if (imc >= 25 && imc < 30) {
+    clasificacionIMC = "Sobrepeso";
+  } else if (imc >= 30 && imc < 35) {
+    clasificacionIMC = "Obesidad Grado I";
+  } else if (imc >= 35 && imc < 40) {
+    clasificacionIMC = "Obesidad Grado II";
+  } else {
+    clasificacionIMC = "Obesidad Grado III";
+  }
+
+  // Fórmula de Harris-Benedict
+  let tmbHB = 0;
+  if (sexo === "Femenino") {
+    tmbHB = 655.1 + (9.56 * peso) + (1.85 * talla) - (4.68 * edad);
+  } else {
+    tmbHB = 66.47 + (13.75 * peso) + (5 * talla) - (6.76 * edad);
+  }
+  const gctHB = tmbHB * factorPatologia * factorActividad;
+
+  // Método OMS
+  let tmbOMS = 0;
+  if (sexo === "Femenino") {
+    if (edad < 30) tmbOMS = 14.7 * peso + 496;
+    else if (edad < 60) tmbOMS = 8.7 * peso + 829;
+    else tmbOMS = 10.5 * peso + 487;
+  } else {
+    if (edad < 30) tmbOMS = 15.3 * peso + 679;
+    else if (edad < 60) tmbOMS = 11.5 * peso + 879;
+    else tmbOMS = 13.5 * peso + 487;
+  }
+  const gctOMS = tmbOMS * factorPatologia * factorActividad;
+
+    // Método del Pulgar - según clasificación nutricional
+  let factorPulgar = 25; // valor por defecto si no entra en ninguno de los casos
+
+  if (clasificacionIMC.includes("Desnutrición") || clasificacionIMC === "Bajo peso") {
+    factorPulgar = 35; // usamos 30-35 como media
+  } else if (clasificacionIMC === "Normopeso") {
+    factorPulgar = 27.5; // media entre 25-30
+  } else if (clasificacionIMC.startsWith("Obesidad")) {
+    factorPulgar = 12.5; // media entre 10-15
+  } else if (clasificacionIMC === "Sobrepeso") {
+    factorPulgar = 20;
+  }
+
+  const kcalPulgar = peso * factorPulgar;
+
+
+  // Mostrar resultados DE REQUERIMIENTOS
+
+
+  const resultadoHTML = `
+
+    <p><strong>IMC:</strong> ${imc.toFixed(1)} — <strong>${clasificacionIMC}</strong> <span style="font-size: 0.8em; color: #999;">(OMS, Canicoba y Mauricio 2017)</span></p>
+  <hr style="margin: 12px 0;">
+  <strong>
+    <h3 style="color:#4285f4;">Fórmula de Harris-Benedict</h3>
+    <p><strong>TMB:</strong> ${tmbHB.toFixed(2)} kcal/día</p>
+    <p><strong>GCT:</strong> ${gctHB.toFixed(2)} kcal/día</p>
+    <p><strong>kcal/kg:</strong> ${(gctHB / peso).toFixed(2)} kcal/kg</p>
+
+    <h3 style="color:#388e3c;">Fórmula OMS</h3>
+    <p><strong>TMB:</strong> ${tmbOMS.toFixed(2)} kcal/día</p>
+    <p><strong>GCT:</strong> ${gctOMS.toFixed(2)} kcal/día</p>
+    <p><strong>kcal/kg:</strong> ${(gctOMS / peso).toFixed(2)} kcal/kg</p>
+
+      <h3 style="color:#d84315;">Método del Pulgar</h3>
+  <p><strong>Factor aplicado:</strong> ${factorPulgar} kcal/kg/día</p>
+  <p><strong>Estimación rápida:</strong> ${kcalPulgar.toFixed(2)} kcal/día</p>
+`;
+
+
+//INSERTAS LOS RESULTADOS DE TMB Y GCT:
+
+  document.getElementById("resultado").innerHTML = resultadoHTML;
+  document.getElementById("resultado").style.display = "block";
+}
+
+
+// ESTO ES NUEVO NO ESTA EN APP SCRIP  para registrar el service worker:
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('Service Worker registrado', reg))
+      .catch(err => console.log('Error registrando Service Worker', err));
+  });
+}
+
+
+  </script>
+
+
+
+  </body>
+</html>
+
