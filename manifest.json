@@ -1,7 +1,7 @@
 {
   "name": "App-Cami",
   "short_name": "App-Cami",
-  "start_url": ".",
+  "start_url": "/Antropometria-calculos/index.html"
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2c3e50",
