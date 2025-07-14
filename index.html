@@ -859,34 +859,43 @@ if ('serviceWorker' in navigator) {
 
   </script>
     
-  <button id="btn-install" style="display:none;">Instalar app</button>
+  <button id="btn-install" style="display:none;">Instalar App-Cami</button>
+    <div id="install-container" style="display: none; position: fixed; bottom: 20px; left: 10px; right: 10px; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1000;">
+  <p style="margin: 0 0 10px; font-weight: bold;">¿Querés instalar la app en tu celular?</p>
+  <button id="btn-install" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px;">
+    Instalar App-Cami
+  </button>
+</div>
+
 
 <script>
   let deferredPrompt;
 
   window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault(); // Previene el popup automático
+    e.preventDefault();
     deferredPrompt = e;
 
+    const container = document.getElementById('install-container');
     const btnInstall = document.getElementById('btn-install');
-    btnInstall.style.display = 'block';
 
-    btnInstall.addEventListener('click', async () => {
-      btnInstall.disabled = true;
+    container.style.display = 'block';
+
+    btnInstall.addEventListener('click', () => {
+      container.style.display = 'none'; // Ocultamos el aviso
       deferredPrompt.prompt();
 
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`Usuario eligió: ${outcome}`);
-      deferredPrompt = null;
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('✅ App instalada');
+        } else {
+          console.log('❌ Instalación cancelada');
+        }
+        deferredPrompt = null;
+      });
     });
   });
-
-  // Opcional: ocultar botón si ya está instalada
-  window.addEventListener('appinstalled', () => {
-    console.log('App instalada');
-    document.getElementById('btn-install').style.display = 'none';
-  });
 </script>
+
 
   </body>
 </html>
