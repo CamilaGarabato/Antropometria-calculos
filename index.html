@@ -859,54 +859,37 @@ if ('serviceWorker' in navigator) {
 
   </script>
     
-    <div id="install-container" style="display: none; position: fixed; bottom: 20px; left: 10px; right: 10px; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1000;">
-  <p style="margin: 0 0 10px; font-weight: bold;">¿Querés instalar la app en tu celular?</p>
+<div id="install-container" style="display: none; position: fixed; bottom: 20px; left: 10px; right: 10px; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1000;">
+  <p style="margin: 0 0 10px; font-weight: bold;">¿Querés instalar la app?</p>
   <button id="btn-install" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px;">
     Instalar App-Cami
   </button>
 </div>
 
-
 <script>
   let deferredPrompt;
-  const esMovil = /Mobi|Android/i.test(navigator.userAgent);
-  
+
   window.addEventListener('beforeinstallprompt', (e) => {
     console.log('✅ Evento beforeinstallprompt detectado');
     e.preventDefault();
     deferredPrompt = e;
 
-    if (esMovil) {
- if (esMovil) {
-      document.getElementById('install-container').style.display = 'block';
-    } else {
-      document.getElementById('btn-install-pc').style.display = 'inline-block';
-    }
+    const container = document.getElementById('install-container');
+    const btn = document.getElementById('btn-install');
+
+    container.style.display = 'block';
+
+    btn.addEventListener('click', () => {
+      container.style.display = 'none';
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choice) => {
+        console.log('👉 Resultado:', choice.outcome);
+        deferredPrompt = null;
+      });
+    });
   });
-
-  const btnMovil = document.getElementById('btn-install-movil');
-  if (btnMovil) {
-    btnMovil.addEventListener('click', () => {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choice) => {
-        console.log('👉 Resultado:', choice.outcome);
-        deferredPrompt = null;
-        document.getElementById('install-container').style.display = 'none';
-      });
-    });
-  }
-
-  const btnPc = document.getElementById('btn-install-pc');
-  if (btnPc) {
-    btnPc.addEventListener('click', () => {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choice) => {
-        console.log('👉 Resultado:', choice.outcome);
-        deferredPrompt = null;
-      });
-    });
-  }
 </script>
+
   </body>
 </html>
 
